@@ -1,6 +1,6 @@
-const { Strategy } = require('passport-local');
+const { Strategy } = require('passport-local')
 
-const AuthService = require('../../../services/authService');
+const AuthService = require('../../../services/auth.service')
 
 /**
  * Local strategy is just used for login
@@ -11,13 +11,13 @@ const LocalStrategy = new Strategy(
     passwordField: 'password'
   },
   async (email, password, done) => {
-    try{
-      const user = await AuthService.getUser(email, password);
-      done(null, user);
-    }catch(error){
-      done(error, false);
+    try {
+      const user = await AuthService.getUser(email, password)
+      done(null, user)
+    } catch (error) {
+      done(error, false)
     }
   }
-);
+)
 
-module.exports = LocalStrategy;
+module.exports = LocalStrategy

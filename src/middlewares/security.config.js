@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -159,22 +160,13 @@ app.use(cors({
   maxAge: 1000,
 }));
 
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+// each IP address is limited to 100 requests every 15 minutes
 
-//  other configuration (custom configuration)
-// const allowCrossDomain = function (req, res, next) {
-//   res.setHeader('Access-Control-Allow-Origin', '*')
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'Origin, Accept, Accept-Version, Content-Length,
-//      Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization'
-//   )
-//   res.setHeader('Access-Control-Allow-Methods', '*')
-//   res.setHeader('Access-Control-Expose-Headers', 'X-Api-Version, X-Request-Id, X-Response-Time')
-//   res.setHeader('Access-Control-Max-Age', '1000')
-//   res.setHeader('X-Frame-Options', 'SAMEORIGIN')
-//   next()
-// }
-
-// app.use(allowCrossDomain)
+app.use(limiter);
 
 module.exports = app;

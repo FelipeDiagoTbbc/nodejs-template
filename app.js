@@ -5,7 +5,7 @@ const { StatusCodes } = require('http-status-codes')
 const logger = require("morgan");
 const securityConfig = require('./src/middlewares/security.config');
 const {checkApiKey} = require('./src/middlewares/auth.handler');
-require('./src/services/database');
+
 
 // middlewares
 const errors = require('./src/middlewares/error.handler');

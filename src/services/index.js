@@ -1,5 +1,5 @@
 module.exports = {
-	adminService: require('./adminService'),
-  userService: require('./userService'),
-  authService: require('./authService'),
+  adminService: require('./admin.service'),
+  userService: require('./user.service'),
+  authService: require('./auth.service')
 }
