@@ -1,11 +1,17 @@
-const createErrorFactory = (name, status = 500, message) => {
-	return class CustomizedError extends Error {
-		constructor(message, status) {
-			super(message);
-			this.name = name;
-			this.statusCode = status;
-		}
-	}
+/**
+ * Factory function to create custom error classes.
+ *
+ * @param {string} name - The name of the custom error class.
+ * @returns {CustomizedError} - The custom error class.
+ */
+const createErrorFactory = (name) => {
+  return class CustomizedError extends Error {
+    constructor(message, status) {
+      super(message);
+      this.name = name;
+      this.status = status;
+    }
+  }
 };
 
 /**

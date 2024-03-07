@@ -20,7 +20,7 @@ app.use('/api', require('./src/routes'))
 app.get('/', (req, res) => {
   console.log('PRUEBA')
   res.status(StatusCodes.OK).send({
-    applicationName: 'Aplicación violencia y salud',
+    applicationName: 'App',
     teamDevelopment: 'TBBC Team'
   })
 })
@@ -28,7 +28,7 @@ app.get('/home',
   checkApiKey,
   (req, res) => {
     res.status(StatusCodes.OK).send({
-      applicationName: 'Aplicación violencia y salud',
+      applicationName: 'App',
       teamDevelopment: 'TBBC Team'
     })
   }
