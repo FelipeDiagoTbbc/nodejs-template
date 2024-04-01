@@ -40,7 +40,7 @@ Start the server
 ## Tech Stack
 
 
-**Server:** Node, Express, MongoDB 
+**Server:** Node, Express
 
 ### 📁 Project Folder Structure
 Here is a suggested folder structure for this project:
@@ -92,7 +92,74 @@ This project uses several security configurations to ensure the safety and relia
 
 6. **Rate Limiting:** The application uses the `express-rate-limit` middleware to limit repeated requests to public APIs and/or endpoints such as password reset, login, and registration.
 
+7. **Cross-Site Request Forgery (CSRF):** The application uses the `csurf` middleware to protect against CSRF attacks. This middleware adds a CSRF token to the request object, which is then used to validate the request. It's important to note that when using CSRF protection, the CSRF token header must also be allowed in CORS configuration. You can find more information about CSRF [here](https://www.scaler.com/topics/expressjs-tutorial/protecting-against-csrf-attacks-in-express/).
+
 These configurations are set up in the `security.config.js` file, and they apply to all routes and endpoints in the application.
+
+
+### CORS Configuration
+
+This project uses Cross-Origin Resource Sharing (CORS) to control which domains are allowed to access the API. Here's a breakdown of the CORS configuration:
+
+- `origin: '*'`: This allows requests from any origin (domain, protocol, or port). 
+
+- `allowedHeaders`: This is a list of HTTP headers that the server will allow the client to use. Here, it's allowing headers like `Origin`, `Accept`, `Content-Type`, `X-Api-Version`, `X-CSRF-Token`, `Authorization`, and others. Notably, `X-CSRF-Token` is used for CSRF protection, and `Authorization` is typically used for sending JWTs or other types of authorization tokens.
+
+- `methods: '*'`: This allows any HTTP method (GET, POST, PUT, DELETE, etc.).
+
+- `exposedHeaders`: This is a list of headers that are safe to expose to the API of a CORS API specification. Here, it's exposing headers like `X-Api-Version`, `X-Request-Id`, and `X-Response-Time`.
+
+- `maxAge: 1000`: This specifies the number of seconds that the preflight request can be cached. This can reduce the number of preflight requests made by the client, improving performance for certain types of requests.
+
+This configuration is passed to the `cors` middleware, which is then used by the Express application. This means that these CORS settings will apply to all routes and endpoints in the application.
+
+
+### Helmet Configuration
+
+This project uses the `helmet` middleware to set up the Content Security Policy (CSP) and other security headers for the Express.js application. Here's a breakdown of the Helmet configuration:
+
+- `app.use(helmet())`: This line sets up a variety of security headers to secure your Express.js application. By default, it enables 11 middleware functions that set various HTTP headers.
+
+- `app.use(helmet.frameguard({ action: 'sameorigin' }))`: This line sets the `X-Frame-Options` header to `SAMEORIGIN`, which means the page can only be displayed in a frame on the same origin as the page itself. The `X-Frame-Options` header is used to indicate whether a browser should be allowed to render a page in a `<frame>`, `<iframe>`, `<embed>`, or `<object>`. Note that `X-Frame-Options` is now deprecated in favor of `frame-src` and `child-src` directives in the CSP.
+
+- `app.use(helmet({...}))`: This line sets up the Content Security Policy (CSP) for your application. The CSP is a security layer that helps detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. The directives defined in the CSP configuration specify the sources from which the application can load resources.
+
+  - `default-src`: This is the default policy for fetching resources such as JavaScript, Images, CSS, Font's, AJAX requests, Frames, HTML5 Media. Here, it's set to `'none'`, which means by default, no content will be loaded unless specified by other more specific directives.
+
+  - `img-src`: This directive specifies valid sources of images. Here, it's allowing images from the same origin (`'self'`), from data URLs (`data:`), and from a variety of specific domains.
+
+  - `script-src`: This directive specifies valid sources for JavaScript. It's allowing scripts from the same origin (`'self'`) and from a variety of specific domains.
+
+  - `style-src`: This directive specifies valid sources for stylesheets. It's allowing stylesheets from the same origin (`'self'`) and from a variety of specific domains.
+
+  - `object-src`: This directive specifies valid sources for the `<object>`, `<embed>`, and `<applet>` elements. Here, it's set to `'none'`, which means these elements will not load content from any source.
+
+  - `manifest-src`: This directive specifies which manifest files can be applied to the resource. Here, it's set to `'self'`, which means only manifest files from the same origin can be applied.
+
+  - `font-src`: This directive specifies valid sources for fonts loaded using `@font-face`. Here, it's allowing fonts from the same origin (`'self'`), from data URLs (`data:`), and from a variety of specific domains.
+
+  - `connect-src`: This directive controls resources the page can connect to via script interfaces (like Fetch API, XMLHttpRequest, WebSocket, and EventSource). Here, it's allowing connections to a variety of specific domains.
+
+  - `frame-src`: This directive specifies valid sources for nested browsing contexts loading using elements such as `<frame>` and `<iframe>`. Here, it's allowing frames from a variety of specific domains.
+
+Just remember that the CSP is a powerful tool for reducing or eliminating the vectors for cross-site scripting attacks, but it can be complex to set up correctly and may require careful testing.
+
+
+### Anti-CSRF TokensSecure Express.js Sessions and Cookies
+
+Anti-CSRF tokens are unique and random values that are generated on the server-side and attached to each user’s session. These tokens are then included in the request body, URL, or headers, and are validated on the server-side to ensure that the request is legitimate.
+
+This project uses the `csurf` middleware to protect against Cross-Site Request Forgery (CSRF) attacks. Here's a breakdown of how it's set up:
+
+- `app.use(csurf())`: This line sets up the `csurf` middleware for the Express.js application. This middleware adds a CSRF token to the request object, which is then used to validate the request. The CSRF token is added to the request object as `req.csrfToken()`.
+
+- `app.use((req, res, next) => {...})`: This middleware function is used to set the CSRF token in a cookie. The CSRF token is then sent to the client in the cookie, and the client must send the token back in the request. This is done to validate the request and protect against CSRF attacks.
+
+- `app.use((err, req, res, next) => {...})`: This middleware function is used to handle CSRF errors. If the CSRF token is missing or invalid, this middleware will catch the error and send an appropriate response to the client.
+
+- `app.use((req, res, next) => {...})`: This middleware function is used to set the CSRF token in the response headers. This is done to ensure that the CSRF token is sent to the client in the response headers.
+
+It's important to note that when using CSRF protection, the CSRF token header must also be allowed in CORS configuration. This is done by adding the `X-CSRF-Token` header to the list of allowed headers in the CORS configuration.
 
 
 ## 🔑 Authentication and Authorization

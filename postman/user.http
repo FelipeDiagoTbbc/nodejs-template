@@ -1,0 +1,43 @@
+### get with api key
+GET http://localhost:8080/home
+Authorization: Bearer 123456
+api: 123456
+
+### get all admin users
+GET http://localhost:8080/api/admin
+
+### Get all users
+GET http://localhost:8080/api/users
+
+### Get by email, query param
+GET http://localhost:8080/api/users/luisrojas@thebitbang.company..
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg5NTg0MDY5OTUsInVzZXJuYW1lIjoiTHVpcyIsImVtYWlsIjoibHVpc3JvamFzQHRoZWJpdGJhbmcuY29tcGFueSIsInJvbGUiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzA4OTU4NDAzfQ.3c18o4RwUB-Qc8Oji0SYyam6_6U7gmx5p8GxQR-8UG4
+
+### POST login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+X-CSRF-Token: s7lOgqMu-Zqk98agf9jiq2K_4Tinje0PYg2s
+
+{
+  "email": "luisrojas@thebitbang.company",
+  "password": "@tbbcADMIN2023"
+}
+
+### Create an user
+POST http://localhost:8080/api/users/signup
+Content-Type: application/json
+
+{
+  "firstName": "Luis",
+  "lastName": "Rojas",
+  "gender": "Masculino",
+  "phone": "+123456789000",
+  "email": "luisrojas@thebitbang.company",
+  "password": "@tbbcADMIN2023",
+  "confirmPassword": "@tbbcADMIN2023",
+  "photo": "john_doe.png",
+  "role": "Administrador",
+  "entity": "Government Entity",
+  "idCardPhoto": "id_card.png",
+  "entityCardPhoto": "entity_card.png"
+}

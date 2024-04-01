@@ -14,7 +14,7 @@ const authController = new AuthController(AuthService);
 // ROUTES
 router.post('/login',
   validatorHandler(loginAuthSchema, 'body'),
-  passport.authenticate('local', { session: false }), // local for the local strategy
+  // passport.authenticate('local', { session: false }), // local for the local strategy
   // the passport middleware will return a user property in req object
   authController.loginUser,
 );

@@ -29,7 +29,8 @@ app.get('/home',
   (req, res) => {
     res.status(StatusCodes.OK).send({
       applicationName: 'App',
-      teamDevelopment: 'TBBC Team'
+      teamDevelopment: 'TBBC Team',
+      csrfToken: req.csrfToken()
     })
   }
 )

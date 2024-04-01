@@ -2,13 +2,19 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const csurf = require('csurf');
+// const session = require('express-session');
+const cookieParser = require('cookie-parser');
+
 
 const app = express();
 
-/* Helmet config */
+
+/*
+ * HELMET configuration
+ */
 // app.disable('x-powered-by') // dont send the x-powered-by header
 app.use(helmet())
-
 app.use(helmet.frameguard({ action: 'sameorigin' })); // Set X-Frame-Options
 // X-Frame-Options is now deprecated in favor of frame-src and child-src
 
@@ -20,25 +26,20 @@ app.use(
         "default-src": ["'none'"],
         "img-src": [
           "'self'",
-          "'unsafe-inline'",
+          // "'unsafe-inline'",
           "data:",
           "https://*.s3.amazonaws.com",
           "https://googleads.g.doubleclick.net",
           "https://www.google-analytics.com",
           "https://www.googleoptimize.com",
           "https://www.googletagmanager.com",
-          "https://*.force.com",
-          "https://*.salesforce.com",
-          "https://*.documentforce.com",
           "https://www.googletagmanager.com",
           "https://optimize.google.com",
-          "https://*.libertyseguros.co",
           "https://www.facebook.com",
           "https://www.google-analytics.com/",
           "https://www.google.com/",
           "https://siteintercept.qualtrics.com/",
           "https://static-assets.qualtrics.com",
-          "https://libertyinsurance.qualtrics.com/",
           "https://www.gstatic.com",
           "https://www.google.com.co",
           "https://ssl.gstatic.com",
@@ -46,27 +47,11 @@ app.use(
           "https://maps.googleapis.com",
         ],
         "script-src": [
-          "https://libertysegurosandinomarket.my.salesforce-sites.com",
-          "https://*.my.salesforce-sites.com",
-          "https://*.secure.force.com",
-          "https://libertyinsurance.qualtrics.com/",
-          "https://*.qualtrics.com",
-          "http://qualtrics.com",
           "'self'",
-          "'unsafe-inline'",
-          "'unsafe-eval'",
+          // "'unsafe-inline'",
+          // "'unsafe-eval'",
           "https://*.googleapis.com",
-          "https://static.lightning.force.com",
-          "https://*.sandbox.my.salesforce-sites.com",
-          "https://*.hotjar.com",
-          "https://static.hotjar.com",
-          "https://script.hotjar.com",
-          "https://*.salesforceliveagent.com",
-          "https://static.hotjar.com",
-          "https://service.force.com",
-          "https://*.my.salesforce.com",
           "https://www.googleoptimize.com/",
-          "https://zn7oqysgt7zlscwp0-libertyinsurance.siteintercept.qualtrics.com/SIE/",
           "https://siteintercept.qualtrics.com",
           "https://www.google.com/recaptcha/",
           "https://www.gstatic.com/recaptcha/",
@@ -85,7 +70,7 @@ app.use(
         ],
         "style-src": [
           "'self'",
-          "'unsafe-inline'",
+          // "'unsafe-inline'",
           "https://*.secure.force.com",
           "https://*.googleapis.com",
           "https://*.libertyseguros.co",
@@ -107,16 +92,10 @@ app.use(
         "connect-src": [
           "https://*.secure.force.com",
           "https://*.googleapis.com",
-          "https://*.hotjar.io",
-          "https://*.libertyseguros-latam.auth0.com",
-          "wss://*.hotjar.com",
-          "https://*.hotjar.com",
-          "https://*.libertyseguros.co",
           "wss://*.execute-api.us-east-1.amazonaws.com",
           "https://*.auth.us-east-1.amazoncognito.com",
           "https://*.execute-api.us-east-1.amazonaws.com",
           "https://analytics.google.com",
-          "https://*.sandbox.my.salesforce-sites.com/",
           "https://stats.g.doubleclick.net",
           "https://siteintercept.qualtrics.com",
           "https://*.auth.us-east-1.amazoncognito.com",
@@ -128,13 +107,9 @@ app.use(
           "https://api.ipify.org",
         ],
         "frame-src": [
-          "https://*.secure.force.com",
-          "https://libertyinsurance.qualtrics.com/",
           "https://*.qualtrics.com",
           "http://qualtrics.com",
-          "https://*.libertyseguros-latam.auth0.com/",
           "https://service.force.com",
-          "https://libertyinsurance.qualtrics.com/",
           "https://www.google.com/recaptcha/",
           "https://recaptcha.google.com/recaptcha/",
           "https://www.googletagmanager.com/",
@@ -147,26 +122,72 @@ app.use(
   })
 );
 
+/*
+ * CORS configuration
+ */
+// List of trusted domains
+const whitelist = ['http://localhost:3000', 'http://localhost:8080'];
+
 // cors configuration
 app.use(cors({
-  origin: '*',
+  origin: function (origin, callback) {
+    console.log('[Security] Origin:', origin);
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   allowedHeaders: [
     'Origin', 'Accept', 'Accept-Version', 'Content-Length', 'Content-MD5',
     'Content-Type', 'Date', 'X-Api-Version', 'X-Response-Time', 'X-PINGOTHER',
     'X-CSRF-Token', 'Authorization'
   ],
-  methods: '*',
+  methods: '*', // 'GET,PUT,POST,DELETE,OPTIONS',
   exposedHeaders: ['X-Api-Version', 'X-Request-Id', 'X-Response-Time'],
-  maxAge: 1000,
+  maxAge: 1000, // 1 day
 }));
 
-// Rate limiting
+/*
+ * Rate limiting configuration
+ */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100 // limit each IP to 100 requests per windowMs
 });
 // each IP address is limited to 100 requests every 15 minutes
-
 app.use(limiter);
+
+/*
+ * Anti CRSF configuration
+ */
+// Configure the cookie-parser middleware
+app.use(cookieParser());
+
+// Configure the csurf middleware
+app.use(csurf({ cookie: true }));
+
+// Add the CSRF token to all responses in the X-CSRF-Token header
+app.use((req, res, next) => {
+  res.setHeader('X-CSRF-Token', req.csrfToken());
+  next();
+});
+
+/*
+ * Rate limiting configuration
+ * Configuration for working with sessions
+ */
+// // Configure and use the express-session middleware
+// app.use(session({
+//   secret: 'mysecret',
+//   resave: false, // Disable session resaving to prevent unnecessary session updates
+//   saveUninitialized: false, // Prevent saving uninitialized sessions to conserve server resources
+//   cookie: { secure: false }, // Configure the session cookie to be secure (HTTPS only)
+//   proxy: true     // Trust the reverse proxy (if applicable) to properly handle secure cookies
+// }));
+
+// // Add csurf middleware to the Express application
+// app.use(csurf());
+
 
 module.exports = app;
