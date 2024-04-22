@@ -76,6 +76,18 @@ Here is a suggested folder structure for this project:
 └── README.md
 ```
 
+### 🛡️ Dependency Security
+
+Developers can use `npm audit` to check for known security issues in the project's dependencies.
+
+For more detailed and continuous security monitoring, this project also includes `Snyk`. `Snyk` provides additional features such as automated fixes and vulnerability alerts. Developers are encouraged to use `Snyk` alongside `npm audit` for comprehensive security coverage of the project's dependencies.
+
+- **npm audit:** This is a built-in command in the npm CLI that automatically checks for security issues in your project dependencies. It reviews the package dependency tree and produces a report of packages that have known security vulnerabilities.
+
+- **Snyk:** This is a third-party tool that helps to find and fix known vulnerabilities in your dependencies. It provides a more comprehensive solution than `npm audit` by offering continuous monitoring and automated fixes.
+
+To run an audit with npm, you can use the command `npm audit`. If you have Snyk installed, you can test your project with the command `snyk test`, and monitor your project continuously with `snyk monitor`.
+
 ### 🔒 Security Configurations
 
 This project uses several security configurations to ensure the safety and reliability of the application:

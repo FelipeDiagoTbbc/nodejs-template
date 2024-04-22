@@ -46,6 +46,7 @@
     "eslint-plugin-n": "16.6.2",
     "eslint-plugin-promise": "6.1.1",
     "morgan": "1.10.0",
-    "nodemon": "3.1.0"
+    "nodemon": "3.1.0",
+    "snyk": "^1.1290.0"
   }
 }
